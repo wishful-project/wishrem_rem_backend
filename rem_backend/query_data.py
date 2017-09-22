@@ -555,6 +555,50 @@ def estimate_tx_location(addr, timespan=60, ulx=0, uly=15, drx=32, dry=0, nx=50,
 
 	return val; 
 
+def estimate_tx_range(addr, timespan=60):
+	'''
+	Returs the estimated tx range of a tx of interest
+	Args:
+		addr: the mac address of the localized device
+		timepsan: the timespan of interest
+	Returns:
+		val: dictionary with 2 points in 3D space (xmin,ymin,zmin,xmax,ymax,zmax)
+	'''
+
+	host_env = os.getenv('MYSQL_ENV', 'localhost')
+	cnx = mysql.connector.connect(user='root',password='rem', host=host_env,database='remdb')
+	cursor = cnx.cursor()
+
+	stopdate = datetime.now()
+	startdate = stopdate-timedelta(minutes=timespan)
+
+	query = ("select x_coord, y_coord, z_coord, value from devices,(select value, rx_mac_address as addr from rssi_meas where tx_mac_address = '"+str(addr)+"' and timestamp between '"+str(startdate)+"' and '"+str(stopdate)+"') tmp where mac_address = addr;")
+
+	cursor.execute(query)
+	dc = cursor.fetchall()
+	x = []
+	y = []
+	z = []
+
+	for row in dc:
+		x.append(row[0])
+		y.append(row[1])
+		z.append(row[2])
+
+	val = None
+	if x:
+		val['xmin'] = min(x)
+		val['xmax'] = max(x)
+		val['ymin'] = min(y)
+		val['ymax'] = max(y)
+		val['zmin'] = min(z)
+		val['zmax'] = max(z)
+
+	cursor.close()
+	cnx.close()
+
+	return val; 
+
 
 #get list of occupied channels from DB
 def get_occupied_channels():
