@@ -589,7 +589,7 @@ def estimate_tx_range(addr, timespan=60):
 	print(y)
 	print(z)
 	val = None
-	if x:
+	if len(x):
 		val['xmin'] = min(x)
 		val['xmax'] = max(x)
 		val['ymin'] = min(y)

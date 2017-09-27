@@ -252,6 +252,7 @@ def get_chann_model(timespan, chann):
 
 	j = 0
 	for row in PL:
+		print(row)
 		H[j,0] = 1
 		H[j,1] = -10*math.log10(row[0])
 		HtH[0,0] += math.pow(H[j,0],2)
