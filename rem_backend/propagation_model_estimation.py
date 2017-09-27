@@ -250,7 +250,7 @@ def get_chann_model(timespan, chann):
 	PL = get_PL_chann(timespan, chann)
 	data = None
 	
-	if len(PL) > 0:
+	if len(PL) > 2:
 		h = numpy.zeros(shape=(len(PL),2))
 		H = numpy.asmatrix(h)
 		Ptx = 20 # dBms max Tx power of WiFI
