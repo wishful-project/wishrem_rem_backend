@@ -201,10 +201,12 @@ def get_PL_chann(timespan, chann):
 	'''
 
 	PL_data = get_PL_chann_dev(timespan, chann)
+	print(PL_data)
 
 	PL = []
 	for row in PL_data:
-		PL.append([get_distance(row[0], row[1]),abs(row[2])]) #dev1_add, dev2_add, loss
+		dist = get_distance(row[0], row[1])
+		if dist is not None: PL.append([dist, abs(row[2])]) #dev1_add, dev2_add, loss
 
 	#PL.append([70,90])	# for testing purposes
 	return PL; 
@@ -246,47 +248,50 @@ def get_chann_model(timespan, chann):
 	HtP = numpy.zeros(2)
 	C = numpy.zeros(2)
 	PL = get_PL_chann(timespan, chann)
-	h = numpy.zeros(shape=(len(PL),2))
-	H = numpy.asmatrix(h)
-	Ptx = 20 # dBms max Tx power of WiFI
-
-	j = 0
-	for row in PL:
-		print(row)
-		H[j,0] = 1
-		H[j,1] = -10*math.log10(row[0])
-		HtH[0,0] += math.pow(H[j,0],2)
-		HtH[0,1] += H[j,0]*H[j,1]
-		HtH[1,0] += H[j,1]*H[j,0]
-		HtH[1,1] += math.pow(H[j,1],2)
-		HtP[0] += H[j,0]*row[1]
-		HtP[1] += H[j,1]*row[1]
-		j += 1
-
-	HtHinv = HtH.I
-
-	C[0] = HtHinv[0,0]*HtP[0] + HtHinv[0,1]*HtP[1]
-	C[1] = HtHinv[1,0]*HtP[0] + HtHinv[1,1]*HtP[1]
-
-	j = 0
-	sigma = 0
-	for row in PL:
-		sigma += math.pow(H[j,0]*C[0]+H[j,1]*C[1]-row[1],2)
-		j += 1
-
-
-	sigma /= len(PL)
-	L0 = Ptx - C[0]
-	alpha = abs(C[1])
-	#maxDist = max(b for (a,b) in PL)
+	data = None
 	
-	data = (str(L0), str(alpha), str(sigma), 1, datetime.now(), chann) 
-	insert_query.insert_propagation_model(data)
+	if len(PL) > 0:
+		h = numpy.zeros(shape=(len(PL),2))
+		H = numpy.asmatrix(h)
+		Ptx = 20 # dBms max Tx power of WiFI
 
-	data = dict()
-	data['L0'] = L0
-	data['alpha'] = alpha
-	data['sigma'] = sigma
+		j = 0
+		for row in PL:
+			print(row)
+			H[j,0] = 1
+			H[j,1] = -10*math.log10(row[0])
+			HtH[0,0] += math.pow(H[j,0],2)
+			HtH[0,1] += H[j,0]*H[j,1]
+			HtH[1,0] += H[j,1]*H[j,0]
+			HtH[1,1] += math.pow(H[j,1],2)
+			HtP[0] += H[j,0]*row[1]
+			HtP[1] += H[j,1]*row[1]
+			j += 1
+
+		HtHinv = HtH.I
+
+		C[0] = HtHinv[0,0]*HtP[0] + HtHinv[0,1]*HtP[1]
+		C[1] = HtHinv[1,0]*HtP[0] + HtHinv[1,1]*HtP[1]
+
+		j = 0
+		sigma = 0
+		for row in PL:
+			sigma += math.pow(H[j,0]*C[0]+H[j,1]*C[1]-row[1],2)
+			j += 1
+
+
+		sigma /= len(PL)
+		L0 = Ptx - C[0]
+		alpha = abs(C[1])
+		#maxDist = max(b for (a,b) in PL)
+	
+		data = (str(L0), str(alpha), str(sigma), 1, datetime.now(), chann) 
+		insert_query.insert_propagation_model(data)
+
+		data = dict()
+		data['L0'] = L0
+		data['alpha'] = alpha
+		data['sigma'] = sigma
 
 	return data; 
 
