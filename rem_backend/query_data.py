@@ -585,6 +585,9 @@ def estimate_tx_range(addr, timespan=60):
 		y.append(row[1])
 		z.append(row[2])
 
+	print(x)
+	print(y)
+	print(z)
 	val = None
 	if x:
 		val['xmin'] = min(x)

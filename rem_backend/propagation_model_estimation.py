@@ -6,10 +6,10 @@ from datetime import date, datetime, timedelta
 import math
 import mysql.connector
 import rem_backend.insert_query as insert_query
-import rem_backend.query_data as query_data
 from numpy import matrix
 from numpy import linalg
 import numpy
+import os
 
 __author__ = "Valentin Rakovic"
 __copyright__ = "Copyright (c) 2017, Faculty of Electrical Engineering and Information Technologies, UKIM, Skopje, Macedonia"
@@ -33,7 +33,8 @@ def get_distance(dev1_mac, dev2_mac):
 		distance: the distance between the devices in meters
 	'''
 
-	cnx = mysql.connector.connect(user='root',password='rem', database='remdb')
+	host_env = os.getenv('MYSQL_ENV', 'localhost')
+	cnx = mysql.connector.connect(user='root',password='rem', host=host_env,database='remdb')
 	cursor = cnx.cursor()
 	R = 6378*1000
 
@@ -129,7 +130,8 @@ def get_PL_link(dev1_mac, dev2_mac, timespan, chann):
 		PL: the pathloss value in dB
 	'''
 
-	cnx = mysql.connector.connect(user='root',password='rem', database='remdb')
+	host_env = os.getenv('MYSQL_ENV', 'localhost')
+	cnx = mysql.connector.connect(user='root',password='rem', host=host_env,database='remdb')
 	cursor = cnx.cursor()
 
 	stopdate = datetime.now()
@@ -163,7 +165,8 @@ def get_PL_chann_dev(timespan, chann):
 		PL: the pathloss value in dB
 	'''
 
-	cnx = mysql.connector.connect(user='root',password='rem', database='remdb')
+	host_env = os.getenv('MYSQL_ENV', 'localhost')
+	cnx = mysql.connector.connect(user='root',password='rem', host=host_env,database='remdb')
 	cursor = cnx.cursor()
 
 	stopdate = datetime.now()
