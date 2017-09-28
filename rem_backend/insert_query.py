@@ -282,10 +282,12 @@ def insert_link_statistics(link_data):
 	       "tx_rate, rx_rate, tx_throughput, rx_throughput, tx_activity, rx_activity, timestamp) "
                "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)")
 	print(add_link_statistics, link_data)
-	print(cursor.execute(add_link_statistics, link_data))
+	result = cursor.execute(add_link_statistics, link_data)
+	print(result)
 
 	# Make sure data is committed to the database
-	print(cnx.commit())
+	result = cnx.commit()
+	print(result)
 
 	cursor.close()
 	cnx.close()
