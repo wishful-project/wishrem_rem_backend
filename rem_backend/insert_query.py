@@ -280,7 +280,7 @@ def insert_link_statistics(link_data):
 	add_link_statistics = ("INSERT IGNORE INTO link_statistics "
                "(tx_mac_address, rx_mac_address, rssi, tx_retries, tx_failed, "
 	       "tx_rate, rx_rate, tx_throughput, rx_throughput, tx_activity, rx_activity, timestamp) "
-               "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)")
+               "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, '%s')")
 	print(add_link_statistics, link_data)
 	result = cursor.execute(add_link_statistics, link_data)
 	print(result)
